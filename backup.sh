@@ -31,7 +31,13 @@ perform_backup() {
             preserve_mid_month_backup "$backup_filename"
         else
             log "Error: Backup process failed."
-            exit 1
+            # Construct the email message
+            email_message="Backup process failed. Please check the log file for details: $log_file"
+            # Send the email
+            echo "$email_message" | mail -s "$email_subject_failure" -r "$sender_email" "$recipient_email"
+            # Log that an attempt was made to send a notification email
+            log "Attempted to send failure notification email to $recipient_email."
+            exit 1 # Keep the exit 1 to indicate failure
         fi
 
         # Rotate backups
